@@ -66,7 +66,7 @@ function Home() {
 
       const response =
         await axios.get(
-          "http://localhost:5000/api/vehicles"
+          "https://vehicle-rental-management-system-uto1.onrender.com/api/vehicles"
         );
 
       setVehicles(response.data);
@@ -128,7 +128,7 @@ function Home() {
 
       await axios.post(
 
-        "http://localhost:5000/api/bookings/create",
+        "https://vehicle-rental-management-system-uto1.onrender.com/api/bookings/create",
 
         {
 

@@ -47,11 +47,11 @@ function Register() {
 
       await axios.post(
 
-        "https://vehicle-rental-backend.onrender.com/api/auth/register",
+  "https://vehicle-rental-management-system-uto1.onrender.com/api/auth/register",
 
-        formData
+  formData
 
-      );
+);
 
       toast.success(
         "Registration Successful 🚀"

@@ -40,7 +40,7 @@ function AddVehicle() {
 
       await axios.post(
 
-        "http://localhost:5000/api/vehicles/add",
+        "https://vehicle-rental-management-system-uto1.onrender.com/api/vehicles/add",
 
         formData,
 

@@ -19,7 +19,7 @@ function Dashboard() {
 
       const response =
         await axios.get(
-          "http://localhost:5000/api/bookings"
+          "https://vehicle-rental-management-system-uto1.onrender.com/api/bookings"
         );
 
       setBookings(response.data);
@@ -41,7 +41,7 @@ function Dashboard() {
 
       await axios.put(
 
-        `http://localhost:5000/api/bookings/approve/${id}`,
+        `https://vehicle-rental-management-system-uto1.onrender.com/api/bookings/approve/${id}`,
 
         {},
 
@@ -85,7 +85,7 @@ function Dashboard() {
 
       await axios.put(
 
-        `http://localhost:5000/api/bookings/reject/${id}`,
+        `https://vehicle-rental-management-system-uto1.onrender.com/api/bookings/reject/${id}`,
 
         {},
 
@@ -129,7 +129,7 @@ function Dashboard() {
 
       await axios.delete(
 
-        `http://localhost:5000/api/vehicles/delete/${id}`,
+        `https://vehicle-rental-management-system-uto1.onrender.com/api/vehicles/delete/${id}`,
 
         {
 

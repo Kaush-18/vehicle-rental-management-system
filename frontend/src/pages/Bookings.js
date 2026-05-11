@@ -22,7 +22,7 @@ function Bookings() {
       const response =
         await axios.get(
 
-          "http://localhost:5000/api/bookings/my-bookings",
+          "https://vehicle-rental-management-system-uto1.onrender.com/api/bookings/my-bookings",
 
           {
             headers: {
