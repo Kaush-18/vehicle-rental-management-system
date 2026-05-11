@@ -1,21 +1,37 @@
 import { useState } from "react";
+
 import axios from "axios";
+
+import toast from "react-hot-toast";
+
+import {
+  useNavigate,
+  Link
+} from "react-router-dom";
+
+import { motion } from "framer-motion";
 
 function Login() {
 
-  const [formData, setFormData] = useState({
+  const navigate =
+    useNavigate();
 
-    email: "",
-    password: ""
+  const [formData, setFormData] =
+    useState({
 
-  });
+      email: "",
+      password: ""
+
+    });
 
   const handleChange = (e) => {
 
     setFormData({
 
       ...formData,
-      [e.target.name]: e.target.value
+
+      [e.target.name]:
+        e.target.value
 
     });
 
@@ -27,32 +43,38 @@ function Login() {
 
     try {
 
-      const response = await axios.post(
+      const response =
+        await axios.post(
 
-        "http://localhost:5000/api/auth/login",
+          "https://vehicle-rental-backend.onrender.com/api/auth/login",
 
-        formData
+          formData
 
-      );
-        localStorage.setItem("token", response.data.token);
-        localStorage.setItem("user", JSON.stringify(response.data.user));
+        );
 
-      // Save token
       localStorage.setItem(
         "token",
         response.data.token
       );
 
-      alert("Login successful");
-      
+      localStorage.setItem(
+        "user",
+        JSON.stringify(response.data.user)
+      );
 
-      console.log(response.data);
+      toast.success(
+        "Login Successful 🚀"
+      );
+
+      navigate("/");
 
     } catch (error) {
 
-      alert("Login failed");
-
       console.log(error);
+
+      toast.error(
+        "Login Failed ❌"
+      );
 
     }
 
@@ -60,37 +82,101 @@ function Login() {
 
   return (
 
-    <div style={{
-      padding: "20px"
-    }}>
+    <div className="min-h-screen bg-[#020817] flex justify-center items-center px-4">
 
-      <h1>Login</h1>
+      <motion.div
 
-      <form onSubmit={handleSubmit}>
+        initial={{
+          opacity: 0,
+          y: 50
+        }}
 
-        <input
-          type="email"
-          name="email"
-          placeholder="Enter email"
-          onChange={handleChange}
-        />
+        animate={{
+          opacity: 1,
+          y: 0
+        }}
 
-        <br /><br />
+        className="bg-[#0f172a] w-full max-w-md p-8 rounded-3xl border border-gray-800 shadow-2xl"
 
-        <input
-          type="password"
-          name="password"
-          placeholder="Enter password"
-          onChange={handleChange}
-        />
+      >
 
-        <br /><br />
+        <h1 className="text-4xl font-bold text-center text-white mb-2">
 
-        <button type="submit">
-          Login
-        </button>
+          Welcome Back 👋
 
-      </form>
+        </h1>
+
+        <p className="text-gray-400 text-center mb-8">
+
+          Login to continue
+
+        </p>
+
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-5"
+        >
+
+          <input
+
+            type="email"
+
+            name="email"
+
+            placeholder="Enter email"
+
+            onChange={handleChange}
+
+            className="w-full bg-gray-900 border border-gray-700 p-4 rounded-xl text-white outline-none"
+
+          />
+
+          <input
+
+            type="password"
+
+            name="password"
+
+            placeholder="Enter password"
+
+            onChange={handleChange}
+
+            className="w-full bg-gray-900 border border-gray-700 p-4 rounded-xl text-white outline-none"
+
+          />
+
+          <button
+
+            type="submit"
+
+            className="w-full bg-blue-600 hover:bg-blue-700 transition py-4 rounded-xl font-semibold text-lg"
+
+          >
+
+            Login
+
+          </button>
+
+        </form>
+
+        <p className="text-gray-400 text-center mt-6">
+
+          Don’t have an account?
+
+          {" "}
+
+          <Link
+            to="/register"
+            className="text-blue-400 hover:underline"
+          >
+
+            Register
+
+          </Link>
+
+        </p>
+
+      </motion.div>
 
     </div>
 
