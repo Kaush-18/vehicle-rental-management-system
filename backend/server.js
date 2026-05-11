@@ -18,7 +18,23 @@ const app = express();
 
 // MIDDLEWARE
 
-app.use(cors());
+app.use(
+
+  cors({
+
+    origin: [
+
+      "http://localhost:3000",
+
+      "https://vehicle-rental-management-system-seven.vercel.app"
+
+    ],
+
+    credentials: true
+
+  })
+
+);
 
 app.use(express.json());
 
