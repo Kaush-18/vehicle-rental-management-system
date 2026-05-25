@@ -37,7 +37,30 @@ function Dashboard() {
 
         );
 
-      setBookings(response.data);
+      // NORMAL USER
+
+      if (user.role === "user") {
+
+        const userBookings =
+          response.data.filter(
+
+            (booking) =>
+
+              booking.user?._id === user._id
+
+          );
+
+        setBookings(userBookings);
+
+      }
+
+      // OWNER / ADMIN
+
+      else {
+
+        setBookings(response.data);
+
+      }
 
     } catch (error) {
 
@@ -179,15 +202,15 @@ function Dashboard() {
 
             user.role === "user"
 
-              ? "User Dashboard"
+              ? "User Dashboard 👤"
 
-              : "Owner Dashboard"
+              : "Owner Dashboard 📊"
 
           }
 
         </h1>
 
-        <div className="flex gap-6">
+        <div className="flex gap-6 items-center">
 
           <Link
             to="/"
@@ -203,11 +226,30 @@ function Dashboard() {
             My Bookings
           </Link>
 
+          {
+
+            (user.role === "owner" ||
+
+             user.role === "admin")
+
+            && (
+
+              <Link
+                to="/add-vehicle"
+                className="hover:text-blue-400"
+              >
+                Add Vehicle
+              </Link>
+
+            )
+
+          }
+
         </div>
 
       </div>
 
-      {/* PAGE CONTENT */}
+      {/* HEADER */}
 
       <div className="p-10">
 
@@ -221,13 +263,13 @@ function Dashboard() {
 
               <h1 className="text-5xl font-bold mb-3">
 
-                User Dashboard 👤
+                My Bookings 🚗
 
               </h1>
 
               <p className="text-gray-400">
 
-                View your bookings and vehicle status.
+                Track your vehicle bookings.
 
               </p>
 
@@ -265,7 +307,29 @@ function Dashboard() {
 
         }
 
-        {/* BOOKINGS GRID */}
+        {/* EMPTY STATE */}
+
+        {
+
+          bookings.length === 0
+
+          && (
+
+            <div className="text-center text-gray-400 mt-20">
+
+              <h1 className="text-3xl font-bold">
+
+                No bookings found 🚘
+
+              </h1>
+
+            </div>
+
+          )
+
+        }
+
+        {/* BOOKINGS */}
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 
@@ -305,15 +369,29 @@ function Dashboard() {
 
                   </p>
 
-                  <p className="mb-2">
+                  {/* ONLY OWNER/ADMIN SEE USER */}
 
-                    👤 User:
+                  {
 
-                    {" "}
+                    (user.role === "owner" ||
 
-                    {booking.user?.name}
+                     user.role === "admin")
 
-                  </p>
+                    && (
+
+                      <p className="mb-2">
+
+                        👤 User:
+
+                        {" "}
+
+                        {booking.user?.name}
+
+                      </p>
+
+                    )
+
+                  }
 
                   <p className="mb-2 text-green-400 font-semibold">
 
@@ -349,7 +427,7 @@ function Dashboard() {
 
                   </p>
 
-                  {/* OWNER / ADMIN CONTROLS */}
+                  {/* APPROVE / REJECT */}
 
                   {
 
