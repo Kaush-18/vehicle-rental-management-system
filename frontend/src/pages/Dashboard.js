@@ -1,17 +1,24 @@
 import { useEffect, useState } from "react";
+
 import axios from "axios";
+
 import toast from "react-hot-toast";
+
+import { Link } from "react-router-dom";
 
 function Dashboard() {
 
   const [bookings, setBookings] =
     useState([]);
 
-  useEffect(() => {
+  const user = JSON.parse(
+    localStorage.getItem("user")
+  );
 
-    fetchBookings();
+  const token =
+    localStorage.getItem("token");
 
-  }, []);
+  // FETCH BOOKINGS
 
   const fetchBookings = async () => {
 
@@ -19,7 +26,15 @@ function Dashboard() {
 
       const response =
         await axios.get(
-          "https://vehicle-rental-management-system-uto1.onrender.com/api/bookings"
+
+          "https://vehicle-rental-management-system-uto1.onrender.com/api/bookings",
+
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+
         );
 
       setBookings(response.data);
@@ -32,12 +47,17 @@ function Dashboard() {
 
   };
 
+  useEffect(() => {
+
+    fetchBookings();
+
+  }, []);
+
+  // APPROVE BOOKING
+
   const approveBooking = async (id) => {
 
     try {
-
-      const token =
-        localStorage.getItem("token");
 
       await axios.put(
 
@@ -46,14 +66,9 @@ function Dashboard() {
         {},
 
         {
-
           headers: {
-
-            Authorization:
-              `Bearer ${token}`
-
-          }
-
+            Authorization: `Bearer ${token}`,
+          },
         }
 
       );
@@ -76,12 +91,11 @@ function Dashboard() {
 
   };
 
+  // REJECT BOOKING
+
   const rejectBooking = async (id) => {
 
     try {
-
-      const token =
-        localStorage.getItem("token");
 
       await axios.put(
 
@@ -90,14 +104,9 @@ function Dashboard() {
         {},
 
         {
-
           headers: {
-
-            Authorization:
-              `Bearer ${token}`
-
-          }
-
+            Authorization: `Bearer ${token}`,
+          },
         }
 
       );
@@ -113,33 +122,27 @@ function Dashboard() {
       console.log(error);
 
       toast.error(
-        "Rejection Failed ❌"
+        "Reject Failed ❌"
       );
 
     }
 
   };
 
+  // DELETE VEHICLE
+
   const deleteVehicle = async (id) => {
 
     try {
-
-      const token =
-        localStorage.getItem("token");
 
       await axios.delete(
 
         `https://vehicle-rental-management-system-uto1.onrender.com/api/vehicles/delete/${id}`,
 
         {
-
           headers: {
-
-            Authorization:
-              `Bearer ${token}`
-
-          }
-
+            Authorization: `Bearer ${token}`,
+          },
         }
 
       );
@@ -166,192 +169,279 @@ function Dashboard() {
 
     <div className="min-h-screen bg-gray-950 text-white">
 
-      {/* Navbar */}
+      {/* NAVBAR */}
 
       <div className="flex justify-between items-center px-10 py-5 border-b border-gray-800">
 
         <h1 className="text-3xl font-bold text-blue-500">
 
-          Owner Dashboard
+          {
+
+            user.role === "user"
+
+              ? "User Dashboard"
+
+              : "Owner Dashboard"
+
+          }
 
         </h1>
 
         <div className="flex gap-6">
 
-          <a
-            href="/"
+          <Link
+            to="/"
             className="hover:text-blue-400"
           >
             Home
-          </a>
+          </Link>
 
-          <a
-            href="/bookings"
+          <Link
+            to="/bookings"
             className="hover:text-blue-400"
           >
             My Bookings
-          </a>
+          </Link>
 
         </div>
 
       </div>
 
-      {/* Heading */}
+      {/* PAGE CONTENT */}
 
       <div className="p-10">
 
-        <h1 className="text-5xl font-bold mb-3">
+        {
 
-          Booking Management 📊
+          user.role === "user"
 
-        </h1>
+          && (
 
-        <p className="text-gray-400 text-lg">
+            <div className="mb-10">
 
-          Approve, reject or delete vehicles
+              <h1 className="text-5xl font-bold mb-3">
 
-        </p>
+                User Dashboard 👤
 
-      </div>
+              </h1>
 
-      {/* Booking Cards */}
+              <p className="text-gray-400">
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-10 pb-20">
-
-        {bookings.map((booking) => (
-
-          <div
-
-            key={booking._id}
-
-            className="bg-gray-900 border border-gray-800 rounded-3xl overflow-hidden shadow-xl"
-
-          >
-
-            <img
-
-              src={
-                booking.vehicleId?.image ||
-
-                "https://images.unsplash.com/photo-1503376780353-7e6692767b70"
-              }
-
-              alt="vehicle"
-
-              className="w-full h-56 object-cover"
-
-            />
-
-            <div className="p-6">
-
-              <h2 className="text-3xl font-bold">
-
-                {booking.vehicleId?.name}
-
-              </h2>
-
-              <p className="text-gray-400 mt-2">
-
-                {booking.vehicleId?.brand}
+                View your bookings and vehicle status.
 
               </p>
 
-              <div className="mt-5 space-y-2">
+            </div>
 
-                <p>
+          )
 
-                  👤 User:
-                  {" "}
+        }
 
-                  <span className="text-gray-300">
+        {
 
-                    {booking.userId?.name}
+          (user.role === "owner" ||
 
-                  </span>
+           user.role === "admin")
 
-                </p>
+          && (
 
-                <p>
+            <div className="mb-10">
 
-                  💰 Price:
-                  {" "}
+              <h1 className="text-5xl font-bold mb-3">
 
-                  <span className="text-green-400">
+                Booking Management 📊
 
-                    ₹{booking.totalPrice}
+              </h1>
 
-                  </span>
+              <p className="text-gray-400">
 
-                </p>
+                Approve, reject or delete vehicles
 
-                <p>
-
-                  🚦 Status:
-                  {" "}
-
-                  <span className="text-yellow-400">
-
-                    {booking.status}
-
-                  </span>
-
-                </p>
-
-              </div>
-
-              <div className="flex gap-4 mt-6">
-
-                <button
-
-                  onClick={() =>
-                    approveBooking(booking._id)
-                  }
-
-                  className="flex-1 bg-green-600 hover:bg-green-700 py-3 rounded-xl font-semibold transition"
-
-                >
-
-                  Approve
-
-                </button>
-
-                <button
-
-                  onClick={() =>
-                    rejectBooking(booking._id)
-                  }
-
-                  className="flex-1 bg-red-600 hover:bg-red-700 py-3 rounded-xl font-semibold transition"
-
-                >
-
-                  Reject
-
-                </button>
-
-              </div>
-
-              <button
-
-                onClick={() =>
-                  deleteVehicle(
-                    booking.vehicleId?._id
-                  )
-                }
-
-                className="w-full mt-4 bg-red-800 hover:bg-red-900 py-3 rounded-xl font-semibold transition"
-
-              >
-
-                Delete Vehicle 🗑️
-
-              </button>
+              </p>
 
             </div>
 
-          </div>
+          )
 
-        ))}
+        }
+
+        {/* BOOKINGS GRID */}
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+          {
+
+            bookings.map((booking) => (
+
+              <div
+
+                key={booking._id}
+
+                className="bg-gray-900 border border-gray-800 rounded-3xl overflow-hidden shadow-lg"
+
+              >
+
+                <img
+
+                  src={booking.vehicle?.image}
+
+                  alt="vehicle"
+
+                  className="w-full h-64 object-cover"
+
+                />
+
+                <div className="p-6">
+
+                  <h1 className="text-3xl font-bold mb-2">
+
+                    {booking.vehicle?.name}
+
+                  </h1>
+
+                  <p className="text-gray-400 mb-4">
+
+                    {booking.vehicle?.brand}
+
+                  </p>
+
+                  <p className="mb-2">
+
+                    👤 User:
+
+                    {" "}
+
+                    {booking.user?.name}
+
+                  </p>
+
+                  <p className="mb-2 text-green-400 font-semibold">
+
+                    💰 Price:
+
+                    {" "}
+
+                    ₹{booking.vehicle?.pricePerDay}
+
+                  </p>
+
+                  {/* STATUS */}
+
+                  <p className="mb-4 font-semibold">
+
+                    📍 Status:
+
+                    <span
+
+                      className={`ml-2 ${
+                        booking.status === "approved"
+                          ? "text-green-400"
+                          : booking.status === "rejected"
+                          ? "text-red-400"
+                          : "text-yellow-400"
+                      }`}
+
+                    >
+
+                      {booking.status}
+
+                    </span>
+
+                  </p>
+
+                  {/* OWNER / ADMIN CONTROLS */}
+
+                  {
+
+                    (user.role === "owner" ||
+
+                     user.role === "admin")
+
+                    &&
+
+                    booking.status === "pending"
+
+                    && (
+
+                      <div className="flex gap-3 mb-4">
+
+                        <button
+
+                          onClick={() =>
+                            approveBooking(
+                              booking._id
+                            )
+                          }
+
+                          className="flex-1 bg-green-600 hover:bg-green-700 py-3 rounded-xl font-semibold"
+
+                        >
+
+                          Approve
+
+                        </button>
+
+                        <button
+
+                          onClick={() =>
+                            rejectBooking(
+                              booking._id
+                            )
+                          }
+
+                          className="flex-1 bg-red-600 hover:bg-red-700 py-3 rounded-xl font-semibold"
+
+                        >
+
+                          Reject
+
+                        </button>
+
+                      </div>
+
+                    )
+
+                  }
+
+                  {/* DELETE BUTTON */}
+
+                  {
+
+                    (user.role === "owner" ||
+
+                     user.role === "admin")
+
+                    && (
+
+                      <button
+
+                        onClick={() =>
+                          deleteVehicle(
+                            booking.vehicle?._id
+                          )
+                        }
+
+                        className="w-full bg-red-800 hover:bg-red-900 py-3 rounded-xl font-semibold"
+
+                      >
+
+                        Delete Vehicle 🗑️
+
+                      </button>
+
+                    )
+
+                  }
+
+                </div>
+
+              </div>
+
+            ))
+
+          }
+
+        </div>
 
       </div>
 
