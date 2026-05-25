@@ -4,28 +4,25 @@ const authMiddleware = (req, res, next) => {
 
   try {
 
-    const authHeader =
-      req.headers.authorization;
+    const authHeader = req.headers.authorization;
 
     console.log("AUTH HEADER:", authHeader);
 
     if (!authHeader) {
 
       return res.status(401).json({
-        message: "No token provided"
+        message: "No token provided",
       });
 
     }
 
-    // Remove Bearer
-    const token =
-      authHeader.split(" ")[1];
+    const token = authHeader.split(" ")[1];
 
     console.log("TOKEN:", token);
 
     const decoded = jwt.verify(
       token,
-      "secretkey"
+      process.env.JWT_SECRET
     );
 
     console.log("DECODED:", decoded);
@@ -39,7 +36,7 @@ const authMiddleware = (req, res, next) => {
     console.log("AUTH ERROR:", error);
 
     res.status(401).json({
-      message: "Invalid token"
+      message: "Invalid token",
     });
 
   }
