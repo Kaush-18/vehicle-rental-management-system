@@ -35,27 +35,18 @@ function AddVehicle() {
 
     try {
 
-      const token =
-        localStorage.getItem("token");
+      const token = localStorage.getItem("token");
+      console.log(token);
 
-      await axios.post(
-
-        "https://vehicle-rental-management-system-uto1.onrender.com/api/vehicles/add",
-
-        formData,
-
-        {
-
-          headers: {
-
-            Authorization:
-              `Bearer ${token}`
-
-          }
-
-        }
-
-      );
+await axios.post(
+  "https://vehicle-rental-management-system-uto1.onrender.com/api/vehicles/add",
+  formData,
+  {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }
+);
 
       toast.success(
         "Vehicle Added 🚗"
