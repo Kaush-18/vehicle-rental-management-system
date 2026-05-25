@@ -44,7 +44,7 @@ function Dashboard() {
 
             (booking) =>
 
-              booking.user?._id === user._id
+              booking.userId?._id === user._id
 
           );
 
@@ -165,27 +165,7 @@ function Dashboard() {
         "Vehicle Deleted 🗑️"
       );
 
-      setBookings(
-
-        bookings.filter(
-
-          (booking) => {
-
-            const currentVehicleId =
-
-              typeof booking.vehicle === "object"
-
-                ? booking.vehicle?._id
-
-                : booking.vehicle;
-
-            return currentVehicleId !== vehicleId;
-
-          }
-
-        )
-
-      );
+      fetchBookings();
 
     } catch (error) {
 
@@ -253,15 +233,7 @@ function Dashboard() {
 
                 <img
 
-                  src={
-
-                    typeof booking.vehicle === "object"
-
-                      ? booking.vehicle?.image
-
-                      : ""
-
-                  }
+                  src={booking.vehicleId?.image}
 
                   alt="vehicle"
 
@@ -273,29 +245,13 @@ function Dashboard() {
 
                   <h1 className="text-3xl font-bold mb-2">
 
-                    {
-
-                      typeof booking.vehicle === "object"
-
-                        ? booking.vehicle?.name
-
-                        : "Vehicle"
-
-                    }
+                    {booking.vehicleId?.name}
 
                   </h1>
 
                   <p className="text-gray-400 mb-2">
 
-                    {
-
-                      typeof booking.vehicle === "object"
-
-                        ? booking.vehicle?.brand
-
-                        : ""
-
-                    }
+                    {booking.vehicleId?.brand}
 
                   </p>
 
@@ -305,7 +261,7 @@ function Dashboard() {
 
                     {" "}
 
-                    {booking.user?.name}
+                    {booking.userId?.name}
 
                   </p>
 
@@ -382,34 +338,13 @@ function Dashboard() {
                         onClick={() => {
 
                           console.log(
-                            "BOOKING:",
-                            booking
+                            "DELETE ID:",
+                            booking.vehicleId?._id
                           );
 
-                          if (booking.vehicle) {
-
-                            const vehicleId =
-
-                              typeof booking.vehicle === "object"
-
-                                ? booking.vehicle._id
-
-                                : booking.vehicle;
-
-                            console.log(
-                              "DELETE ID:",
-                              vehicleId
-                            );
-
-                            deleteVehicle(vehicleId);
-
-                          } else {
-
-                            toast.error(
-                              "Vehicle ID not found ❌"
-                            );
-
-                          }
+                          deleteVehicle(
+                            booking.vehicleId?._id
+                          );
 
                         }}
 
