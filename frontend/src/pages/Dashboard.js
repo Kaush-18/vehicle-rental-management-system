@@ -37,8 +37,6 @@ function Dashboard() {
 
         );
 
-      // USER BOOKINGS ONLY
-
       if (user.role === "user") {
 
         const userBookings =
@@ -52,11 +50,7 @@ function Dashboard() {
 
         setBookings(userBookings);
 
-      }
-
-      // OWNER / ADMIN
-
-      else {
+      } else {
 
         setBookings(response.data);
 
@@ -76,7 +70,7 @@ function Dashboard() {
 
   }, []);
 
-  // ================= APPROVE BOOKING =================
+  // ================= APPROVE =================
 
   const approveBooking = async (id) => {
 
@@ -106,15 +100,11 @@ function Dashboard() {
 
       console.log(error);
 
-      toast.error(
-        "Approval Failed ❌"
-      );
-
     }
 
   };
 
-  // ================= REJECT BOOKING =================
+  // ================= REJECT =================
 
   const rejectBooking = async (id) => {
 
@@ -144,10 +134,6 @@ function Dashboard() {
 
       console.log(error);
 
-      toast.error(
-        "Reject Failed ❌"
-      );
-
     }
 
   };
@@ -156,12 +142,13 @@ function Dashboard() {
 
   const deleteVehicle = async (vehicleId) => {
 
-    try {
+    console.log(
+      "DELETE CLICKED"
+    );
 
-      console.log(
-        "DELETE VEHICLE ID:",
-        vehicleId
-      );
+    console.log(vehicleId);
+
+    try {
 
       await axios.delete(
 
@@ -178,8 +165,6 @@ function Dashboard() {
       toast.success(
         "Vehicle Deleted 🗑️"
       );
-
-      // REMOVE FROM UI
 
       setBookings(
 
@@ -215,19 +200,11 @@ function Dashboard() {
 
         <h1 className="text-3xl font-bold text-blue-500">
 
-          {
-
-            user.role === "user"
-
-              ? "User Dashboard 👤"
-
-              : "Owner Dashboard 📊"
-
-          }
+          Dashboard 📊
 
         </h1>
 
-        <div className="flex gap-6 items-center">
+        <div className="flex gap-6">
 
           <Link
             to="/"
@@ -236,110 +213,20 @@ function Dashboard() {
             Home
           </Link>
 
-          {
-
-            (user.role === "owner" ||
-
-             user.role === "admin")
-
-            && (
-
-              <Link
-                to="/add-vehicle"
-                className="hover:text-blue-400"
-              >
-                Add Vehicle
-              </Link>
-
-            )
-
-          }
+          <Link
+            to="/add-vehicle"
+            className="hover:text-blue-400"
+          >
+            Add Vehicle
+          </Link>
 
         </div>
 
       </div>
 
-      {/* HEADER */}
+      {/* BOOKINGS */}
 
       <div className="p-10">
-
-        {
-
-          user.role === "user"
-
-          && (
-
-            <div className="mb-10">
-
-              <h1 className="text-5xl font-bold mb-3">
-
-                My Bookings 🚗
-
-              </h1>
-
-              <p className="text-gray-400">
-
-                Track your bookings here.
-
-              </p>
-
-            </div>
-
-          )
-
-        }
-
-        {
-
-          (user.role === "owner" ||
-
-           user.role === "admin")
-
-          && (
-
-            <div className="mb-10">
-
-              <h1 className="text-5xl font-bold mb-3">
-
-                Booking Management 📊
-
-              </h1>
-
-              <p className="text-gray-400">
-
-                Approve, reject or delete vehicles
-
-              </p>
-
-            </div>
-
-          )
-
-        }
-
-        {/* EMPTY STATE */}
-
-        {
-
-          bookings.length === 0
-
-          && (
-
-            <div className="text-center text-gray-400 mt-20">
-
-              <h1 className="text-3xl font-bold">
-
-                No bookings found 🚘
-
-              </h1>
-
-            </div>
-
-          )
-
-        }
-
-        {/* BOOKINGS GRID */}
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 
@@ -351,7 +238,7 @@ function Dashboard() {
 
                 key={booking._id}
 
-                className="bg-gray-900 border border-gray-800 rounded-3xl overflow-hidden shadow-lg"
+                className="bg-gray-900 rounded-3xl overflow-hidden border border-gray-800"
 
               >
 
@@ -373,61 +260,29 @@ function Dashboard() {
 
                   </h1>
 
-                  <p className="text-gray-400 mb-4">
+                  <p className="text-gray-400 mb-2">
 
                     {booking.vehicle?.brand}
 
                   </p>
 
-                  {
+                  <p className="mb-2">
 
-                    (user.role === "owner" ||
-
-                     user.role === "admin")
-
-                    && (
-
-                      <p className="mb-2">
-
-                        👤 User:
-
-                        {" "}
-
-                        {booking.user?.name}
-
-                      </p>
-
-                    )
-
-                  }
-
-                  <p className="mb-2 text-green-400 font-semibold">
-
-                    💰 Price:
+                    👤 User:
 
                     {" "}
 
-                    ₹{booking.vehicle?.pricePerDay}
+                    {booking.user?.name}
 
                   </p>
 
-                  {/* STATUS */}
+                  <p className="mb-4">
 
-                  <p className="mb-4 font-semibold">
+                    Status:
 
-                    📍 Status:
+                    {" "}
 
-                    <span
-
-                      className={`ml-2 ${
-                        booking.status === "approved"
-                          ? "text-green-400"
-                          : booking.status === "rejected"
-                          ? "text-red-400"
-                          : "text-yellow-400"
-                      }`}
-
-                    >
+                    <span className="text-yellow-400">
 
                       {booking.status}
 
@@ -435,15 +290,7 @@ function Dashboard() {
 
                   </p>
 
-                  {/* APPROVE / REJECT */}
-
                   {
-
-                    (user.role === "owner" ||
-
-                     user.role === "admin")
-
-                    &&
 
                     booking.status === "pending"
 
@@ -459,7 +306,7 @@ function Dashboard() {
                             )
                           }
 
-                          className="flex-1 bg-green-600 hover:bg-green-700 py-3 rounded-xl font-semibold"
+                          className="flex-1 bg-green-600 py-3 rounded-xl"
 
                         >
 
@@ -475,7 +322,7 @@ function Dashboard() {
                             )
                           }
 
-                          className="flex-1 bg-red-600 hover:bg-red-700 py-3 rounded-xl font-semibold"
+                          className="flex-1 bg-red-600 py-3 rounded-xl"
 
                         >
 
@@ -489,41 +336,31 @@ function Dashboard() {
 
                   }
 
-                  {/* DELETE VEHICLE */}
+                  {/* DELETE BUTTON */}
 
-                  {
+                  <button
 
-                    (user.role === "owner" ||
+                    onClick={() => {
 
-                     user.role === "admin")
+                      console.log(booking);
 
-                    && (
+                      if (booking.vehicle?._id) {
 
-                      <button
+                        deleteVehicle(
+                          booking.vehicle._id
+                        );
 
-                        onClick={() => {
+                      }
 
-                          if (booking.vehicle?._id) {
+                    }}
 
-                            deleteVehicle(
-                              booking.vehicle._id
-                            );
+                    className="w-full bg-red-800 hover:bg-red-900 py-3 rounded-xl font-semibold"
 
-                          }
+                  >
 
-                        }}
+                    Delete Vehicle 🗑️
 
-                        className="w-full bg-red-800 hover:bg-red-900 py-3 rounded-xl font-semibold"
-
-                      >
-
-                        Delete Vehicle 🗑️
-
-                      </button>
-
-                    )
-
-                  }
+                  </button>
 
                 </div>
 

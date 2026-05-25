@@ -125,6 +125,11 @@ router.delete(
 
     try {
 
+      console.log(
+        "DELETE ROUTE HIT:",
+        req.params.id
+      );
+
       const vehicle =
         await Vehicle.findByIdAndDelete(
           req.params.id
