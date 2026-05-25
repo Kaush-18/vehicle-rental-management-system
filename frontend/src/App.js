@@ -5,13 +5,14 @@ import {
 } from "react-router-dom";
 
 import Home from "./pages/Home";
-import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Bookings from "./pages/Bookings";
+import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import AddVehicle from "./pages/AddVehicle";
 
 import ProtectedRoute from "./components/ProtectedRoute";
+
+import { Toaster } from "react-hot-toast";
 
 function App() {
 
@@ -19,9 +20,11 @@ function App() {
 
     <BrowserRouter>
 
+      <Toaster position="top-right" />
+
       <Routes>
 
-        {/* Public Routes */}
+        {/* PUBLIC ROUTES */}
 
         <Route
           path="/"
@@ -29,33 +32,16 @@ function App() {
         />
 
         <Route
-          path="/login"
-          element={<Login />}
-        />
-
-        <Route
           path="/register"
           element={<Register />}
         />
 
-
-        {/* Protected Routes */}
-
         <Route
-
-          path="/bookings"
-
-          element={
-
-            <ProtectedRoute>
-
-              <Bookings />
-
-            </ProtectedRoute>
-
-          }
-
+          path="/login"
+          element={<Login />}
         />
+
+        {/* PROTECTED DASHBOARD */}
 
         <Route
 
@@ -73,13 +59,22 @@ function App() {
 
         />
 
+        {/* OWNER + ADMIN ONLY */}
+
         <Route
 
           path="/add-vehicle"
 
           element={
 
-            <ProtectedRoute>
+            <ProtectedRoute
+
+              allowedRoles={[
+                "admin",
+                "owner"
+              ]}
+
+            >
 
               <AddVehicle />
 
