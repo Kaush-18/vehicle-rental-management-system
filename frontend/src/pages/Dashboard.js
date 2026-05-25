@@ -70,7 +70,7 @@ function Dashboard() {
 
   }, []);
 
-  // ================= APPROVE =================
+  // ================= APPROVE BOOKING =================
 
   const approveBooking = async (id) => {
 
@@ -104,7 +104,7 @@ function Dashboard() {
 
   };
 
-  // ================= REJECT =================
+  // ================= REJECT BOOKING =================
 
   const rejectBooking = async (id) => {
 
@@ -142,13 +142,12 @@ function Dashboard() {
 
   const deleteVehicle = async (vehicleId) => {
 
-    console.log(
-      "DELETE CLICKED"
-    );
-
-    console.log(vehicleId);
-
     try {
+
+      console.log(
+        "DELETE VEHICLE ID:",
+        vehicleId
+      );
 
       await axios.delete(
 
@@ -170,9 +169,19 @@ function Dashboard() {
 
         bookings.filter(
 
-          (booking) =>
+          (booking) => {
 
-            booking.vehicle?._id !== vehicleId
+            const currentVehicleId =
+
+              typeof booking.vehicle === "object"
+
+                ? booking.vehicle?._id
+
+                : booking.vehicle;
+
+            return currentVehicleId !== vehicleId;
+
+          }
 
         )
 
@@ -244,7 +253,15 @@ function Dashboard() {
 
                 <img
 
-                  src={booking.vehicle?.image}
+                  src={
+
+                    typeof booking.vehicle === "object"
+
+                      ? booking.vehicle?.image
+
+                      : ""
+
+                  }
 
                   alt="vehicle"
 
@@ -256,13 +273,29 @@ function Dashboard() {
 
                   <h1 className="text-3xl font-bold mb-2">
 
-                    {booking.vehicle?.name}
+                    {
+
+                      typeof booking.vehicle === "object"
+
+                        ? booking.vehicle?.name
+
+                        : "Vehicle"
+
+                    }
 
                   </h1>
 
                   <p className="text-gray-400 mb-2">
 
-                    {booking.vehicle?.brand}
+                    {
+
+                      typeof booking.vehicle === "object"
+
+                        ? booking.vehicle?.brand
+
+                        : ""
+
+                    }
 
                   </p>
 
@@ -293,6 +326,8 @@ function Dashboard() {
                   {
 
                     booking.status === "pending"
+
+                    && user.role !== "user"
 
                     && (
 
@@ -336,31 +371,59 @@ function Dashboard() {
 
                   }
 
-                  {/* DELETE BUTTON */}
+                  {
 
-                  <button
+                    user.role !== "user"
 
-                    onClick={() => {
+                    && (
 
-                      console.log(booking);
+                      <button
 
-                      if (booking.vehicle?._id) {
+                        onClick={() => {
 
-                        deleteVehicle(
-                          booking.vehicle._id
-                        );
+                          console.log(
+                            "BOOKING:",
+                            booking
+                          );
 
-                      }
+                          if (booking.vehicle) {
 
-                    }}
+                            const vehicleId =
 
-                    className="w-full bg-red-800 hover:bg-red-900 py-3 rounded-xl font-semibold"
+                              typeof booking.vehicle === "object"
 
-                  >
+                                ? booking.vehicle._id
 
-                    Delete Vehicle 🗑️
+                                : booking.vehicle;
 
-                  </button>
+                            console.log(
+                              "DELETE ID:",
+                              vehicleId
+                            );
+
+                            deleteVehicle(vehicleId);
+
+                          } else {
+
+                            toast.error(
+                              "Vehicle ID not found ❌"
+                            );
+
+                          }
+
+                        }}
+
+                        className="w-full bg-red-800 hover:bg-red-900 py-3 rounded-xl font-semibold"
+
+                      >
+
+                        Delete Vehicle 🗑️
+
+                      </button>
+
+                    )
+
+                  }
 
                 </div>
 
