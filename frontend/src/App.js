@@ -1,18 +1,35 @@
 import {
+
   BrowserRouter,
+
   Routes,
+
   Route
+
 } from "react-router-dom";
 
+import { Toaster } from "react-hot-toast";
+
+
+// PAGES
+
 import Home from "./pages/Home";
-import Register from "./pages/Register";
+
 import Login from "./pages/Login";
+
+import Register from "./pages/Register";
+
 import Dashboard from "./pages/Dashboard";
+
 import AddVehicle from "./pages/AddVehicle";
+
+import Bookings from "./pages/Bookings";
+
+
+// COMPONENTS
 
 import ProtectedRoute from "./components/ProtectedRoute";
 
-import { Toaster } from "react-hot-toast";
 
 function App() {
 
@@ -24,24 +41,37 @@ function App() {
 
       <Routes>
 
-        {/* PUBLIC ROUTES */}
+        {/* HOME */}
 
         <Route
+
           path="/"
+
           element={<Home />}
+
         />
 
-        <Route
-          path="/register"
-          element={<Register />}
-        />
+        {/* LOGIN */}
 
         <Route
+
           path="/login"
+
           element={<Login />}
+
         />
 
-        {/* PROTECTED DASHBOARD */}
+        {/* REGISTER */}
+
+        <Route
+
+          path="/register"
+
+          element={<Register />}
+
+        />
+
+        {/* DASHBOARD */}
 
         <Route
 
@@ -59,7 +89,7 @@ function App() {
 
         />
 
-        {/* OWNER + ADMIN ONLY */}
+        {/* ADD VEHICLE */}
 
         <Route
 
@@ -67,16 +97,27 @@ function App() {
 
           element={
 
-            <ProtectedRoute
-
-              allowedRoles={[
-                "admin",
-                "owner"
-              ]}
-
-            >
+            <ProtectedRoute>
 
               <AddVehicle />
+
+            </ProtectedRoute>
+
+          }
+
+        />
+
+        {/* BOOKINGS */}
+
+        <Route
+
+          path="/bookings"
+
+          element={
+
+            <ProtectedRoute>
+
+              <Bookings />
 
             </ProtectedRoute>
 
