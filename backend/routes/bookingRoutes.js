@@ -1,7 +1,7 @@
 const express = require("express");
 
-const Booking = require("../models/Booking");
-const Vehicle = require("../models/Vehicle");
+const Booking =
+  require("../models/Booking");
 
 const authMiddleware =
   require("../middleware/authMiddleware");
@@ -12,65 +12,80 @@ const roleMiddleware =
 const router = express.Router();
 
 
-// CREATE BOOKING
+// ================= CREATE BOOKING =================
+
 router.post(
-  "/create",
+
+  "/book",
 
   authMiddleware,
-
-  roleMiddleware("user"),
 
   async (req, res) => {
 
     try {
 
       const {
+
         vehicleId,
         startDate,
         endDate
+
       } = req.body;
 
-      const userId = req.user.id;
+      // CHECK EXISTING BOOKING
 
-      // Find vehicle
-      const vehicle =
-        await Vehicle.findById(vehicleId);
+      const existingBooking =
+        await Booking.findOne({
 
-      if (!vehicle) {
+          vehicleId,
 
-        return res.status(404).json({
-          message: "Vehicle not found"
+          status: "approved",
+
+          $or: [
+
+            {
+
+              startDate: {
+                $lte: endDate
+              },
+
+              endDate: {
+                $gte: startDate
+              }
+
+            }
+
+          ]
+
+        });
+
+      if (existingBooking) {
+
+        return res.status(400).json({
+
+          message:
+            "Vehicle already booked for selected dates"
+
         });
 
       }
 
-      // Calculate days
-      const start =
-        new Date(startDate);
+      // CREATE BOOKING
 
-      const end =
-        new Date(endDate);
-
-      const days =
-        Math.ceil(
-          (end - start) /
-          (1000 * 60 * 60 * 24)
-        );
-
-      // Total price
-      const totalPrice =
-        days * vehicle.pricePerDay;
-
-      // Create booking
       const booking =
         await Booking.create({
 
-          userId,
+          userId:
+            req.user.id,
+
           vehicleId,
+
           startDate,
+
           endDate,
-          totalPrice,
-          status: "pending"
+
+          status:
+            "pending"
 
         });
 
@@ -94,12 +109,17 @@ router.post(
     }
 
   }
+
 );
 
 
-// GET ALL BOOKINGS
+// ================= GET BOOKINGS =================
+
 router.get(
+
   "/",
+
+  authMiddleware,
 
   async (req, res) => {
 
@@ -107,10 +127,25 @@ router.get(
 
       const bookings =
         await Booking.find()
+
           .populate("userId")
+
           .populate("vehicleId");
 
-      res.status(200).json(bookings);
+      // REMOVE BROKEN BOOKINGS
+
+      const validBookings =
+        bookings.filter(
+
+          (booking) =>
+
+            booking.vehicleId !== null
+
+        );
+
+      res.status(200).json(
+        validBookings
+      );
 
     } catch (error) {
 
@@ -123,51 +158,21 @@ router.get(
     }
 
   }
+
 );
 
 
-// GET MY BOOKINGS
-router.get(
-  "/my-bookings",
+// ================= APPROVE BOOKING =================
 
-  authMiddleware,
-
-  async (req, res) => {
-
-    try {
-
-      const bookings =
-        await Booking.find({
-
-          userId: req.user.id
-
-        }).populate("vehicleId");
-
-      res.status(200).json(bookings);
-
-    } catch (error) {
-
-      console.log(error);
-
-      res.status(500).json({
-        error: error.message
-      });
-
-    }
-
-  }
-);
-
-
-// APPROVE BOOKING
 router.put(
+
   "/approve/:id",
 
   authMiddleware,
 
   roleMiddleware(
-    "owner",
-    "admin"
+    "admin",
+    "owner"
   ),
 
   async (req, res) => {
@@ -175,24 +180,30 @@ router.put(
     try {
 
       const booking =
-        await Booking.findByIdAndUpdate(
-
-          req.params.id,
-
-          {
-            status: "approved"
-          },
-
-          { new: true }
-
+        await Booking.findById(
+          req.params.id
         );
+
+      if (!booking) {
+
+        return res.status(404).json({
+
+          message:
+            "Booking not found"
+
+        });
+
+      }
+
+      booking.status =
+        "approved";
+
+      await booking.save();
 
       res.status(200).json({
 
         message:
-          "Booking approved",
-
-        booking
+          "Booking approved successfully"
 
       });
 
@@ -207,18 +218,21 @@ router.put(
     }
 
   }
+
 );
 
 
-// REJECT BOOKING
+// ================= REJECT BOOKING =================
+
 router.put(
+
   "/reject/:id",
 
   authMiddleware,
 
   roleMiddleware(
-    "owner",
-    "admin"
+    "admin",
+    "owner"
   ),
 
   async (req, res) => {
@@ -226,24 +240,30 @@ router.put(
     try {
 
       const booking =
-        await Booking.findByIdAndUpdate(
-
-          req.params.id,
-
-          {
-            status: "rejected"
-          },
-
-          { new: true }
-
+        await Booking.findById(
+          req.params.id
         );
+
+      if (!booking) {
+
+        return res.status(404).json({
+
+          message:
+            "Booking not found"
+
+        });
+
+      }
+
+      booking.status =
+        "rejected";
+
+      await booking.save();
 
       res.status(200).json({
 
         message:
-          "Booking rejected",
-
-        booking
+          "Booking rejected successfully"
 
       });
 
@@ -258,6 +278,62 @@ router.put(
     }
 
   }
+
+);
+
+
+// ================= DELETE BOOKING =================
+
+router.delete(
+
+  "/delete/:id",
+
+  authMiddleware,
+
+  roleMiddleware(
+    "admin",
+    "owner"
+  ),
+
+  async (req, res) => {
+
+    try {
+
+      const booking =
+        await Booking.findByIdAndDelete(
+          req.params.id
+        );
+
+      if (!booking) {
+
+        return res.status(404).json({
+
+          message:
+            "Booking not found"
+
+        });
+
+      }
+
+      res.status(200).json({
+
+        message:
+          "Booking deleted successfully"
+
+      });
+
+    } catch (error) {
+
+      console.log(error);
+
+      res.status(500).json({
+        error: error.message
+      });
+
+    }
+
+  }
+
 );
 
 module.exports = router;

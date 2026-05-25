@@ -3,6 +3,9 @@ const express = require("express");
 const Vehicle =
   require("../models/Vehicle");
 
+const Booking =
+  require("../models/Booking");
+
 const authMiddleware =
   require("../middleware/authMiddleware");
 
@@ -130,6 +133,8 @@ router.delete(
         req.params.id
       );
 
+      // DELETE VEHICLE
+
       const vehicle =
         await Vehicle.findByIdAndDelete(
           req.params.id
@@ -146,10 +151,19 @@ router.delete(
 
       }
 
+      // DELETE RELATED BOOKINGS
+
+      await Booking.deleteMany({
+
+        vehicleId:
+          req.params.id
+
+      });
+
       res.status(200).json({
 
         message:
-          "Vehicle deleted successfully"
+          "Vehicle and related bookings deleted successfully"
 
       });
 
