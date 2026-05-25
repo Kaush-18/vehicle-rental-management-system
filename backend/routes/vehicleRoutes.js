@@ -12,10 +12,12 @@ const roleMiddleware =
 const router = express.Router();
 
 
-// GET ALL VEHICLES
+// ================= GET ALL VEHICLES =================
 
 router.get(
+
   "/",
+
   async (req, res) => {
 
     try {
@@ -23,7 +25,9 @@ router.get(
       const vehicles =
         await Vehicle.find();
 
-      res.status(200).json(vehicles);
+      res.status(200).json(
+        vehicles
+      );
 
     } catch (error) {
 
@@ -36,10 +40,11 @@ router.get(
     }
 
   }
+
 );
 
 
-// ADD VEHICLE
+// ================= ADD VEHICLE =================
 
 router.post(
 
@@ -99,10 +104,11 @@ router.post(
     }
 
   }
+
 );
 
 
-// DELETE VEHICLE
+// ================= DELETE VEHICLE =================
 
 router.delete(
 
@@ -119,9 +125,21 @@ router.delete(
 
     try {
 
-      await Vehicle.findByIdAndDelete(
-        req.params.id
-      );
+      const vehicle =
+        await Vehicle.findByIdAndDelete(
+          req.params.id
+        );
+
+      if (!vehicle) {
+
+        return res.status(404).json({
+
+          message:
+            "Vehicle not found"
+
+        });
+
+      }
 
       res.status(200).json({
 
@@ -141,6 +159,7 @@ router.delete(
     }
 
   }
+
 );
 
 module.exports = router;

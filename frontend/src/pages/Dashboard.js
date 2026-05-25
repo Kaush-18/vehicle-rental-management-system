@@ -18,7 +18,7 @@ function Dashboard() {
   const token =
     localStorage.getItem("token");
 
-  // FETCH BOOKINGS
+  // ================= FETCH BOOKINGS =================
 
   const fetchBookings = async () => {
 
@@ -37,7 +37,7 @@ function Dashboard() {
 
         );
 
-      // NORMAL USER
+      // USER BOOKINGS ONLY
 
       if (user.role === "user") {
 
@@ -76,7 +76,7 @@ function Dashboard() {
 
   }, []);
 
-  // APPROVE BOOKING
+  // ================= APPROVE BOOKING =================
 
   const approveBooking = async (id) => {
 
@@ -114,7 +114,7 @@ function Dashboard() {
 
   };
 
-  // REJECT BOOKING
+  // ================= REJECT BOOKING =================
 
   const rejectBooking = async (id) => {
 
@@ -152,15 +152,20 @@ function Dashboard() {
 
   };
 
-  // DELETE VEHICLE
+  // ================= DELETE VEHICLE =================
 
-  const deleteVehicle = async (id) => {
+  const deleteVehicle = async (vehicleId) => {
 
     try {
 
+      console.log(
+        "DELETE VEHICLE ID:",
+        vehicleId
+      );
+
       await axios.delete(
 
-        `https://vehicle-rental-management-system-uto1.onrender.com/api/vehicles/delete/${id}`,
+        `https://vehicle-rental-management-system-uto1.onrender.com/api/vehicles/delete/${vehicleId}`,
 
         {
           headers: {
@@ -174,7 +179,19 @@ function Dashboard() {
         "Vehicle Deleted 🗑️"
       );
 
-      fetchBookings();
+      // REMOVE FROM UI
+
+      setBookings(
+
+        bookings.filter(
+
+          (booking) =>
+
+            booking.vehicle?._id !== vehicleId
+
+        )
+
+      );
 
     } catch (error) {
 
@@ -217,13 +234,6 @@ function Dashboard() {
             className="hover:text-blue-400"
           >
             Home
-          </Link>
-
-          <Link
-            to="/bookings"
-            className="hover:text-blue-400"
-          >
-            My Bookings
           </Link>
 
           {
@@ -269,7 +279,7 @@ function Dashboard() {
 
               <p className="text-gray-400">
 
-                Track your vehicle bookings.
+                Track your bookings here.
 
               </p>
 
@@ -329,7 +339,7 @@ function Dashboard() {
 
         }
 
-        {/* BOOKINGS */}
+        {/* BOOKINGS GRID */}
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 
@@ -368,8 +378,6 @@ function Dashboard() {
                     {booking.vehicle?.brand}
 
                   </p>
-
-                  {/* ONLY OWNER/ADMIN SEE USER */}
 
                   {
 
@@ -481,7 +489,7 @@ function Dashboard() {
 
                   }
 
-                  {/* DELETE BUTTON */}
+                  {/* DELETE VEHICLE */}
 
                   {
 
@@ -493,11 +501,17 @@ function Dashboard() {
 
                       <button
 
-                        onClick={() =>
-                          deleteVehicle(
-                            booking.vehicle?._id
-                          )
-                        }
+                        onClick={() => {
+
+                          if (booking.vehicle?._id) {
+
+                            deleteVehicle(
+                              booking.vehicle._id
+                            );
+
+                          }
+
+                        }}
 
                         className="w-full bg-red-800 hover:bg-red-900 py-3 rounded-xl font-semibold"
 
