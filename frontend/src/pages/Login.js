@@ -1,6 +1,9 @@
 import { useState } from "react";
+
 import axios from "axios";
+
 import toast from "react-hot-toast";
+
 import {
   useNavigate,
   Link
@@ -10,7 +13,8 @@ import { motion } from "framer-motion";
 
 function Login() {
 
-  const navigate = useNavigate();
+  const navigate =
+    useNavigate();
 
   const [formData, setFormData] =
     useState({
@@ -19,9 +23,6 @@ function Login() {
       password: ""
 
     });
-
-  const [loading, setLoading] =
-    useState(false);
 
   const handleChange = (e) => {
 
@@ -40,8 +41,6 @@ function Login() {
 
     e.preventDefault();
 
-    setLoading(true);
-
     try {
 
       const response =
@@ -56,38 +55,61 @@ function Login() {
       // SAVE TOKEN
 
       localStorage.setItem(
+
         "token",
+
         response.data.token
+
       );
 
       // SAVE USER
 
       localStorage.setItem(
+
         "user",
-        JSON.stringify(response.data.user)
+
+        JSON.stringify(
+          response.data.user
+        )
+
       );
 
       toast.success(
         "Login Successful 🚀"
       );
 
-      navigate("/dashboard");
+      const userRole =
+        response.data.user.role;
+
+      // ROLE BASED REDIRECT
+
+      if (
+
+        userRole === "admin"
+
+        ||
+
+        userRole === "owner"
+
+      ) {
+
+        navigate("/dashboard");
+
+      } else {
+
+        navigate("/");
+
+      }
 
     } catch (error) {
 
       console.log(error);
 
       toast.error(
-
-        error.response?.data?.message ||
-
         "Login Failed ❌"
-
       );
 
     }
-
-    setLoading(false);
 
   };
 
@@ -113,7 +135,7 @@ function Login() {
 
         <h1 className="text-4xl font-bold text-center text-white mb-2">
 
-          Welcome Back 👋
+          Welcome Back 🔥
 
         </h1>
 
@@ -136,8 +158,6 @@ function Login() {
 
             placeholder="Enter email"
 
-            value={formData.email}
-
             onChange={handleChange}
 
             className="w-full bg-gray-900 border border-gray-700 p-4 rounded-xl text-white outline-none"
@@ -152,8 +172,6 @@ function Login() {
 
             placeholder="Enter password"
 
-            value={formData.password}
-
             onChange={handleChange}
 
             className="w-full bg-gray-900 border border-gray-700 p-4 rounded-xl text-white outline-none"
@@ -164,21 +182,11 @@ function Login() {
 
             type="submit"
 
-            disabled={loading}
-
             className="w-full bg-blue-600 hover:bg-blue-700 transition py-4 rounded-xl font-semibold text-lg"
 
           >
 
-            {
-
-              loading
-
-                ? "Logging in..."
-
-                : "Login"
-
-            }
+            Login
 
           </button>
 
