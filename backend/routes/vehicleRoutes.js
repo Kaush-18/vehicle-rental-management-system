@@ -12,6 +12,9 @@ const authMiddleware =
 const roleMiddleware =
   require("../middleware/roleMiddleware");
 
+const upload =
+  require("../middleware/upload");
+
 const router = express.Router();
 
 
@@ -60,6 +63,8 @@ router.post(
     "owner"
   ),
 
+  upload.single("image"),
+
   async (req, res) => {
 
     try {
@@ -70,10 +75,14 @@ router.post(
         brand,
         type,
         pricePerDay,
-        location,
-        image
+        location
 
       } = req.body;
+
+      // CLOUDINARY IMAGE
+
+      const image =
+        req.file.path;
 
       const vehicle =
         await Vehicle.create({
